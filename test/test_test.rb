@@ -12,6 +12,13 @@ module Hurley
           output = %w(fee fi fo fum)
           [200, {}, output.join("\n")]
         end
+
+        stub.get "/c" do |req|
+          [200, {}, "all the cs"]
+        end
+        stub.get("/c/1") do |req|
+          [200, {}, "one c"]
+        end
       end
 
       @client = Client.new do |c|
@@ -25,6 +32,12 @@ module Hurley
 
       res = @client.get("/a/verboten")
       assert_equal 403, res.status_code
+
+      res = @client.get("/c")
+      assert_equal "all the cs", res.body
+
+      res = @client.get("/c/1")
+      assert_equal "one c", res.body
     end
 
     def test_returns_404_if_no_handler_found
