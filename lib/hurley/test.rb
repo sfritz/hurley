@@ -38,7 +38,8 @@ module Hurley
     end
 
     def call(request)
-      handler = @handlers.detect { |h| h.matches?(request) } ||
+      handler = @handlers.select { |h| h.matches?(request) }
+                         .max_by { |h| h.request.url.path.length } ||
         Handler.method(:not_found)
       # Create a new url with fresh state from the url string
       request.url = Url.parse(request.url.to_s)
